@@ -10,6 +10,10 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private SpriteRenderer spriteRenderer;
 
+
+    private bool isUpright => state != MovementState.Ducking && state != MovementState.Crawling;
+    private bool isFalling => state == MovementState.Jumping && dir_Y < 0;
+
     [SerializeField] private LayerMask GroundLayer;
 
     private float dir_X;
@@ -30,40 +34,49 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update() {
         dir_X = Input.GetAxisRaw("Horizontal");
-        if(dir_X != 0)
+        if (dir_X != 0)
             Turn(dir_X);
+
         if (IsGrounded()) {
-            if (Input.GetButtonDown("Down")) {
-                state = MovementState.Ducking;
-            }
-            else if (Input.GetButtonUp("Down")) {
-                state = MovementState.Ready;
-            }
-            if (dir_X != 0) {
-                if (state == MovementState.Ducking || state == MovementState.Crawling)
-                    state = MovementState.Crawling;
-                else
-                    state = MovementState.Running;
-            }
-            else if (state != MovementState.Ducking && state != MovementState.Crawling)
-                state = MovementState.Ready;
-            else
-                state = MovementState.Ducking;
-            if (state == MovementState.Jumping || state == MovementState.Falling) {
-                // Trigger Landing
-            }
-            if (Input.GetButtonDown("Jump")) {
-                dir_Y = 1;
-                // Trigger takeoff
-                state = MovementState.Jumping;
-            }
+            handleGroundMovement();
         }
         else {
-            if (rb.velocity.y < 0 && state == MovementState.Jumping) {
-                state = MovementState.Falling;
-            }
+            handleJump();
         }
+
+
         animator.SetInteger("PlayerState", (int)state);
+    }
+
+    private void handleGroundMovement() {
+        if (Input.GetButton("Down")) {
+            state = MovementState.Ducking;
+        }
+        else if (Input.GetButtonUp("Down")) {
+            state = MovementState.Ready;
+        }
+        if (dir_X == 0) { // Standing still
+            state = isUpright ? MovementState.Ready : MovementState.Ducking;
+        }
+        else { // Moving
+            state = isUpright ? MovementState.Running : MovementState.Crawling;
+        }
+
+        if (state == MovementState.Jumping || state == MovementState.Falling) {
+            // Trigger Landing
+        }
+        if (Input.GetButtonDown("Jump")) {
+            dir_Y = 1;
+            // Trigger takeoff
+            state = MovementState.Jumping;
+        }
+
+    }
+
+    private void handleJump() {
+        if (isFalling) {
+            state = MovementState.Falling;
+        }
     }
 
     private void FixedUpdate() {
