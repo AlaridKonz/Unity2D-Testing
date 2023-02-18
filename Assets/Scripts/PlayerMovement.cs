@@ -2,8 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
-{
+public class PlayerMovement : MonoBehaviour {
     private Rigidbody2D rb;
     private BoxCollider2D bc;
     private MovementState state;
@@ -41,8 +40,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (IsGrounded()) {
             handleGroundMovement();
-        }
-        else {
+        } else {
             handleJump();
         }
 
@@ -56,14 +54,12 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetButton("Down")) {
             state = MovementState.Ducking;
-        }
-        else if (Input.GetButtonUp("Down")) {
+        } else if (Input.GetButtonUp("Down")) {
             state = MovementState.Ready;
         }
         if (dir_X == 0) { // Standing still
             state = isUpright ? MovementState.Ready : MovementState.Ducking;
-        }
-        else { // Moving
+        } else { // Moving
             state = isUpright ? (isWalking ? MovementState.Walking : MovementState.Running) : MovementState.Crawling;
         }
         if (Input.GetButtonDown("Jump")) {
