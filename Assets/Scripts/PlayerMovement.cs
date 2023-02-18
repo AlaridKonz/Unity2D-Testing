@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
     private BoxCollider2D bc;
     private MovementState state;
     private Animator animator;
-    private SpriteRenderer spriteRenderer;
 
 
     private bool isUpright => state != MovementState.Ducking && state != MovementState.Crawling;
@@ -19,7 +18,11 @@ public class PlayerMovement : MonoBehaviour
     private float dir_X;
     private float dir_Y;
 
+    private bool isWalking => Input.GetButton("Walk");
+
     [SerializeField] float moveSpeed;
+    [SerializeField] float walkSpeed;
+    [SerializeField] float crawlSpeed;
     [SerializeField] float jumpForce;
 
     // Start is called before the first frame update
@@ -28,7 +31,6 @@ public class PlayerMovement : MonoBehaviour
         bc = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         state = MovementState.Ready;
-        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -49,6 +51,9 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void handleGroundMovement() {
+        if (state == MovementState.Jumping || state == MovementState.Falling) {
+            animator.SetTrigger("Land");
+        }
         if (Input.GetButton("Down")) {
             state = MovementState.Ducking;
         }
@@ -59,15 +64,11 @@ public class PlayerMovement : MonoBehaviour
             state = isUpright ? MovementState.Ready : MovementState.Ducking;
         }
         else { // Moving
-            state = isUpright ? MovementState.Running : MovementState.Crawling;
-        }
-
-        if (state == MovementState.Jumping || state == MovementState.Falling) {
-            // Trigger Landing
+            state = isUpright ? (isWalking ? MovementState.Walking : MovementState.Running) : MovementState.Crawling;
         }
         if (Input.GetButtonDown("Jump")) {
             dir_Y = 1;
-            // Trigger takeoff
+            animator.SetTrigger("Takeoff");
             state = MovementState.Jumping;
         }
 
@@ -80,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        rb.velocity = new Vector2(dir_X * moveSpeed, rb.velocity.y);
+        rb.velocity = new Vector2(dir_X * (isUpright ? (isWalking ? walkSpeed : moveSpeed) : crawlSpeed), rb.velocity.y);
         if (dir_Y == 1) {
             rb.velocity = new Vector2(rb.velocity.x, dir_Y * jumpForce);
             dir_Y = 0;
