@@ -9,14 +9,9 @@ public class Idle : State {
         if (hasNotReachedFrameRateTime) return;
         PlayNextFrame();
         CycleSpriteIndex();
+
+        ShouldExit();
     }
 
-}
 
-public class InputManager : MonoBehaviour {
-    // input down
-    // input
-    // input up
-
-    // any valid input
 }

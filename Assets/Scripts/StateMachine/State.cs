@@ -3,7 +3,7 @@ using UnityEngine;
 public class State : StateMachine {
     protected Character core;
     protected StateMachine parent;
-    protected State substate;
+    // protected State substate;
 
     [SerializeField] protected int framerate = 10;
     [SerializeField] protected SpriteSheet spriteSheet;
@@ -14,6 +14,10 @@ public class State : StateMachine {
     protected float time => Time.time - startTime;
     protected bool hasNotReachedFrameRateTime => framesSinceSpriteUpdate++ < framerate;
     public bool finished { get; private set; }
+
+    protected bool canMove = true;
+    protected float moveSpeedModifier = 1.0f;
+    protected string exitReason;
 
     virtual public void Setup(StateMachine _parent) {
         parent = _parent;
@@ -35,8 +39,8 @@ public class State : StateMachine {
 
     }
 
-    virtual public void Exit() {
-
+    virtual public void Exit(string reason) {
+        exitReason = reason;
     }
 
     virtual public bool ShouldEnter() {
@@ -60,6 +64,14 @@ public class State : StateMachine {
     virtual public void NextSpriteIndex() {
         if (spriteIndex < spriteSheet.sprites.Length - 1) spriteIndex++;
         else finished = true;
+    }
+
+    virtual public void SubmitActionRequest() {
+
+    }
+
+    virtual public void TryAttack() {
+
     }
 }
 

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Grounded : State {
-    [SerializeField] Walk walk;
-    [SerializeField] Run run;
-    [SerializeField] Idle idle;
-    [SerializeField] Crouch crouch;
-    [SerializeField] Attack attack;
+    [SerializeField] protected Walk walk;
+    [SerializeField] protected Run run;
+    [SerializeField] protected Idle idle;
+    [SerializeField] protected Crouch crouch;
+    [SerializeField] protected Attack attack;
     State defaultSubState;
 
     private void Awake() {
@@ -17,7 +17,15 @@ public class Grounded : State {
     }
 
     public override void Continue() {
-        substate.Continue();
+        if (!substate.finished)
+            substate.Continue();
+        else
+            Set(idle, false, "finished last state");
+    }
+
+    public override void TryAttack() {
+        if (substate == attack) return;
+        Set(attack, true, "attack");
     }
 
 }

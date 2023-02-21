@@ -8,6 +8,8 @@ public class Character : StateMachine {
     [HideInInspector] public Rigidbody2D body;
     protected State[] childStates;
     protected Vector2 pos => transform.position;
+    protected float horizontalMovement;
+    protected bool jumped;
 
 
     private void Awake() {
