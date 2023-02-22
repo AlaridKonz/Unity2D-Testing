@@ -12,6 +12,7 @@ public class Character : StateMachine {
     public bool jumped;
     public float movementSpeed = 7f;
     public float jumpForce = 14f;
+    public float facingDirection => transform.localScale.x;
 
 
     private void Awake() {

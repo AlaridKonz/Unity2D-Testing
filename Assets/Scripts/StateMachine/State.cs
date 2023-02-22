@@ -46,6 +46,7 @@ public class State : StateMachine {
         framesSinceSpriteUpdate = 0;
         timeSinceLastUpdate = 0;
         trigger = null;
+        moveSpeedModifier = 1.0f;
     }
 
     virtual public void Continue() {
@@ -93,6 +94,7 @@ public class State : StateMachine {
 
     virtual public void TryMovement(float horizontalMovement) {
         TurnTowards(horizontalMovement);
+        if (!canMove) return;
         if (substate != null) substate.TryMovement(horizontalMovement);
     }
 

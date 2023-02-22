@@ -12,7 +12,6 @@ public class RootPlayerState : State {
     }
 
     public override void Continue() {
-        if (core.jumped) { TryJump(); return; }
         if (!substate.finished)
             substate.Continue();
         else
@@ -25,9 +24,14 @@ public class RootPlayerState : State {
 
     public override void TryJump() {
         if (!canJump) return;
-        if (substate == grounded)
+        if (substate == grounded) {
             Set(midair, false, "jumped");
-        else if (substate == midair) substate.TryJump();
+            return;
+        }
+        if (substate == midair) {
+            substate.TryJump();
+            return;
+        }
     }
 
 }

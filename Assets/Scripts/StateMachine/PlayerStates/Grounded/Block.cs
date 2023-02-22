@@ -6,6 +6,7 @@ public class Block : State {
 
     public override void Enter() {
         base.Enter();
+        canMove = false;
     }
 
     public override void Continue() {

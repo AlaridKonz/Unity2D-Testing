@@ -20,7 +20,7 @@ public class Grounded : State {
     }
 
     public override void Continue() {
-        if (trigger != null && !trigger.finished) { trigger.Continue(); return; } else trigger = null;
+        if (trigger != null && !trigger.finished) { trigger.Continue(); return; } else ClearTrigger();
         if (!substate.finished)
             substate.Continue();
         else
@@ -28,7 +28,7 @@ public class Grounded : State {
     }
 
     public override void FixedContinue() {
-        if (trigger != null && !trigger.finished) { trigger.FixedContinue(); return; } else trigger = null;
+        if (trigger != null && !trigger.finished) { trigger.FixedContinue(); return; } else ClearTrigger();
         substate.FixedContinue();
     }
 

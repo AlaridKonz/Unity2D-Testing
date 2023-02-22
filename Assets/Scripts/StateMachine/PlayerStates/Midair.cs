@@ -24,7 +24,7 @@ public class Midair : State {
     }
 
     public override void Continue() {
-        if (trigger != null && !trigger.finished) { trigger.Continue(); return; } else trigger = null;
+        if (trigger != null && !trigger.finished) { trigger.Continue(); return; } else ClearTrigger();
         if (substate.finished) {
             if (substate == groundJump || substate == airJump)
                 Set(ascending, true, "finished jump impulse");
@@ -38,7 +38,7 @@ public class Midair : State {
     }
 
     public override void FixedContinue() {
-        if (trigger != null && !trigger.finished) { trigger.FixedContinue(); return; } else trigger = null;
+        if (trigger != null && !trigger.finished) { trigger.FixedContinue(); return; } else ClearTrigger();
         substate.FixedContinue();
     }
 
@@ -61,8 +61,9 @@ public class Midair : State {
     }
 
     public override void TryMovement(float horizontalMovement) {
-        if (!canMove) return;
-        core.body.velocity = new Vector2(horizontalMovement * core.movementSpeed * moveSpeedModifier, core.body.velocity.y);
+        if (trigger != null) trigger.TryMovement(horizontalMovement);
+        else
+            core.body.velocity = new Vector2(horizontalMovement * core.movementSpeed * moveSpeedModifier, core.body.velocity.y);
     }
 
     public override void TryJump() {

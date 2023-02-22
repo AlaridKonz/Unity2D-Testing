@@ -28,5 +28,11 @@ public class StateMachine : MonoBehaviour {
         }
     }
 
+    public void ClearTrigger() {
+        if (trigger != null)
+            trigger.Exit("");
+        trigger = null;
+    }
+
 }
 

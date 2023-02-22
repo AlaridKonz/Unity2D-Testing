@@ -16,7 +16,7 @@ public class PlayerBehaviour : Character {
     void Update() {
         currentState = substate.getDeepState();
         horizontalMovement = inputManager.GetMovement();
-        jumped = inputManager.PressedJump();
+        jumped = jumped || inputManager.PressedJump();
         bool blocked = inputManager.PressedBlock();
         bool attacked = inputManager.PressedAttack();
         if (attacked) substate.TryAttack();
