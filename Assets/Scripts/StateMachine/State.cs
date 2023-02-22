@@ -6,18 +6,29 @@ public class State : StateMachine {
     // protected State substate;
 
     [SerializeField] protected int framerate = 10;
-    [SerializeField] protected SpriteSheet spriteSheet;
+    protected SpriteSheet spriteSheet;
     protected int spriteIndex = 0;
     protected int frameCounter = 0;
     protected int framesSinceSpriteUpdate = 0;
     protected float startTime;
     protected float time => Time.time - startTime;
     protected bool hasNotReachedFrameRateTime => framesSinceSpriteUpdate++ < framerate;
-    public bool finished { get; private set; }
+    public bool finished { get; protected set; }
+    protected float frameUpdateTime => 1.0f / (float)framerate;
+    protected float timeSinceLastUpdate = 0;
+    protected bool isTimeToUpdate => timeSinceLastUpdate >= frameUpdateTime;
 
     protected bool canMove = true;
+    protected bool canAttack = true;
+    protected bool stayPassive = false;
+    protected bool canJump = true;
     protected float moveSpeedModifier = 1.0f;
     protected string exitReason;
+
+    virtual protected void Awake() {
+        spriteSheet = GetComponent<SpriteSheet>();
+        Enter();
+    }
 
     virtual public void Setup(StateMachine _parent) {
         parent = _parent;
@@ -28,7 +39,13 @@ public class State : StateMachine {
     }
 
     virtual public void Enter() {
-
+        finished = false;
+        startTime = Time.time;
+        frameCounter = 0;
+        spriteIndex = 0;
+        framesSinceSpriteUpdate = 0;
+        timeSinceLastUpdate = 0;
+        trigger = null;
     }
 
     virtual public void Continue() {
@@ -71,7 +88,28 @@ public class State : StateMachine {
     }
 
     virtual public void TryAttack() {
+        if (substate != null) substate.TryAttack();
+    }
 
+    virtual public void TryMovement(float horizontalMovement) {
+        if (substate != null) substate.TryMovement(horizontalMovement);
+    }
+
+    virtual public void TryJump() {
+        if (substate != null) substate.TryJump();
+    }
+
+    virtual public void TryBlock() {
+        if (substate != null) substate.TryBlock();
+    }
+
+    virtual public void TryDodge() {
+        if (substate != null) substate.TryDodge();
+    }
+
+    public State getDeepState() {
+        if (substate != null) return substate.getDeepState();
+        else return this;
     }
 }
 

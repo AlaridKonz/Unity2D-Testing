@@ -31,6 +31,10 @@ public class InputManager : MonoBehaviour {
         return getKeyDown(InputBindings.getBindings(Action.Jump));
     }
 
+    public bool PressedBlock() {
+        return getKeyDown(InputBindings.getBindings(Action.Block));
+    }
+
     public bool Pressed(Action action) {
         return getKeyDown(InputBindings.getBindings(action));
     }

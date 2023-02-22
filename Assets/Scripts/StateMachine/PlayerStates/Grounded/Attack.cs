@@ -5,15 +5,18 @@ using UnityEngine;
 public class Attack : State {
 
     public override void Enter() {
-        Debug.Log("attack");
-        framerate = 30;
+        base.Enter();
+        framerate = 10;
+        moveSpeedModifier = 0.5f;
     }
 
     public override void Continue() {
-        frameCounter++;
-        if (hasNotReachedFrameRateTime) return;
+        timeSinceLastUpdate += Time.deltaTime;
+        if (!isTimeToUpdate && frameCounter != 0) return;
         PlayNextFrame();
         NextSpriteIndex();
+        frameCounter++;
+        timeSinceLastUpdate = 0;
     }
 
 }

@@ -2,21 +2,28 @@ using UnityEngine;
 
 public class PlayerBehaviour : Character {
 
-    [SerializeField] Grounded groundedState;
+    [SerializeField] RootPlayerState rootPlayerState;
     public InputManager inputManager { get; private set; }
+    public State currentState;
 
     void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         body = GetComponent<Rigidbody2D>();
-        substate = groundedState;
+        Set(rootPlayerState, false, "initial state");
         inputManager = GameObject.Find("InputManager").GetComponent<InputManager>();
     }
 
     void Update() {
+        currentState = substate.getDeepState();
         horizontalMovement = inputManager.GetMovement();
         jumped = inputManager.PressedJump();
+        bool blocked = inputManager.PressedBlock();
         bool attacked = inputManager.PressedAttack();
         if (attacked) substate.TryAttack();
+        if (blocked) {
+            if (horizontalMovement == 0) substate.TryBlock();
+            else substate.TryDodge();
+        }
 
         if (!substate.finished)
             substate.Continue();
@@ -24,6 +31,9 @@ public class PlayerBehaviour : Character {
     }
 
     void FixedUpdate() {
+        if (jumped) substate.TryJump();
+        else substate.TryMovement(horizontalMovement);
+        jumped = false;
         if (!substate.finished)
             substate.FixedContinue();
     }
