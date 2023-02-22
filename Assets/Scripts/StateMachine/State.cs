@@ -92,6 +92,7 @@ public class State : StateMachine {
     }
 
     virtual public void TryMovement(float horizontalMovement) {
+        TurnTowards(horizontalMovement);
         if (substate != null) substate.TryMovement(horizontalMovement);
     }
 
@@ -110,6 +111,11 @@ public class State : StateMachine {
     public State getDeepState() {
         if (substate != null) return substate.getDeepState();
         else return this;
+    }
+
+    private void TurnTowards(float horizontalMovement) {
+        if (horizontalMovement != 0)
+            core.transform.localScale = new Vector3(Mathf.Sign(horizontalMovement), 1, 1);
     }
 }
 
