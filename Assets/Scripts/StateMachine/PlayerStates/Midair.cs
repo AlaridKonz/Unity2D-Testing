@@ -11,6 +11,7 @@ public class Midair : State {
 
     // Triggers
     [SerializeField] protected AirAttack attack;
+    [SerializeField] protected AirAttack2 attack2;
     [SerializeField] protected AirBlock block;
     [SerializeField] protected AirDodge dodge;
 
@@ -44,7 +45,8 @@ public class Midair : State {
 
     public override void TryAttack() {
         if (!canAttack) return;
-        Try(attack);
+        if (trigger != attack) Try(attack);
+        else Try(attack2, true);
     }
 
     public override void TryBlock() {
@@ -55,19 +57,24 @@ public class Midair : State {
         Try(dodge);
     }
 
-    private void Try(State newTrigger) {
-        if (trigger != null || stayPassive) return;
+    private void Try(State newTrigger, bool force = false) {
+        if ((trigger != null || stayPassive) && !force) return;
         Trigger(newTrigger, true);
     }
 
-    public override void TryMovement(float horizontalMovement) {
-        if (trigger != null) trigger.TryMovement(horizontalMovement);
+    public override void TryMovement(float horizontalInput, float verticalInput) {
+        if (trigger != null) trigger.TryMovement(horizontalInput, verticalInput);
         else
-            core.body.velocity = new Vector2(horizontalMovement * core.movementSpeed * moveSpeedModifier, core.body.velocity.y);
+            core.body.velocity = new Vector2(horizontalInput * core.movementSpeed * moveSpeedModifier, core.body.velocity.y);
     }
 
     public override void TryJump() {
-        if (airJumpCounter >= maxAirJumps) return;
+        if (substate == landing) {
+            airJumpCounter = 0;
+            Set(groundJump, true, "jump while landing");
+            return;
+        }
+        if (airJumpCounter >= maxAirJumps || substate == groundJump) return;
         Set(airJump, true, "jump while midair");
         airJumpCounter++;
     }

@@ -43,6 +43,10 @@ public class InputManager : MonoBehaviour {
         return Input.GetAxisRaw("Horizontal");
     }
 
+    public float GetVertical() {
+        return Input.GetAxisRaw("Vertical");
+    }
+
     public bool getKeyDown(Bindings bind) {
         return Input.GetKeyDown(controllerUsed ? bind.controller : bind.keyboard);
     }

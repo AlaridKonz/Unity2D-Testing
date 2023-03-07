@@ -5,23 +5,23 @@ public class PlayerBehaviour : Character {
     [SerializeField] RootPlayerState rootPlayerState;
     public InputManager inputManager { get; private set; }
     public State currentState;
+    // [SerializeField] private float actionBufferTime = 0.2f;
 
     void Start() {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        body = GetComponent<Rigidbody2D>();
         Set(rootPlayerState, false, "initial state");
         inputManager = GameObject.Find("InputManager").GetComponent<InputManager>();
     }
 
     void Update() {
         currentState = substate.getDeepState();
-        horizontalMovement = inputManager.GetMovement();
+        horizontalInput = inputManager.GetMovement();
+        verticalInput = inputManager.GetVertical();
         jumped = jumped || inputManager.PressedJump();
         bool blocked = inputManager.PressedBlock();
         bool attacked = inputManager.PressedAttack();
         if (attacked) substate.TryAttack();
         if (blocked) {
-            if (horizontalMovement == 0) substate.TryBlock();
+            if (horizontalInput == 0) substate.TryBlock();
             else substate.TryDodge();
         }
 
@@ -32,7 +32,7 @@ public class PlayerBehaviour : Character {
 
     void FixedUpdate() {
         if (jumped) substate.TryJump();
-        else substate.TryMovement(horizontalMovement);
+        else substate.TryMovement(horizontalInput, verticalInput);
         jumped = false;
         if (!substate.finished)
             substate.FixedContinue();

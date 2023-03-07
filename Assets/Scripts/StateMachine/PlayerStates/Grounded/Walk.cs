@@ -22,10 +22,10 @@ public class Walk : State {
     }
 
     public override void FixedContinue() {
-        core.body.velocity = new Vector2(core.horizontalMovement * core.movementSpeed * moveSpeedModifier, core.body.velocity.y);
+        core.body.velocity = new Vector2(core.horizontalInput * core.movementSpeed * moveSpeedModifier, core.body.velocity.y);
     }
 
     public override bool ShouldExit() {
-        return Mathf.Abs(core.horizontalMovement) < 0.1f;
+        return Mathf.Abs(core.horizontalInput) < 0.1f;
     }
 }

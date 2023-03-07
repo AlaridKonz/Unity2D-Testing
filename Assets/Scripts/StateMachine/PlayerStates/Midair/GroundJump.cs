@@ -13,6 +13,7 @@ public class GroundJump : State {
         if (!isTimeToUpdate && frameCounter != 0) return;
         PlayNextFrame();
         NextSpriteIndex();
+
         frameCounter++;
         timeSinceLastUpdate = 0;
     }

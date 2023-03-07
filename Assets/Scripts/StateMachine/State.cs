@@ -13,6 +13,7 @@ public class State : StateMachine {
     protected float startTime;
     protected float time => Time.time - startTime;
     protected bool hasNotReachedFrameRateTime => framesSinceSpriteUpdate++ < framerate;
+    protected bool finishNextFrame;
     public bool finished { get; protected set; }
     protected float frameUpdateTime => 1.0f / (float)framerate;
     protected float timeSinceLastUpdate = 0;
@@ -39,6 +40,7 @@ public class State : StateMachine {
     }
 
     virtual public void Enter() {
+        finishNextFrame = false;
         finished = false;
         startTime = Time.time;
         frameCounter = 0;
@@ -69,6 +71,10 @@ public class State : StateMachine {
         return true;
     }
 
+    virtual public void SetFirstFrame() {
+        core.spriteRenderer.sprite = spriteSheet.sprites[0];
+    }
+
     virtual public void PlayNextFrame() {
         core.spriteRenderer.sprite = spriteSheet.sprites[spriteIndex];
         framesSinceSpriteUpdate = 0;
@@ -80,8 +86,9 @@ public class State : StateMachine {
     }
 
     virtual public void NextSpriteIndex() {
+        if (finishNextFrame) { finished = true; return; }
         if (spriteIndex < spriteSheet.sprites.Length - 1) spriteIndex++;
-        else finished = true;
+        else finishNextFrame = true;
     }
 
     virtual public void SubmitActionRequest() {
@@ -92,10 +99,10 @@ public class State : StateMachine {
         if (substate != null) substate.TryAttack();
     }
 
-    virtual public void TryMovement(float horizontalMovement) {
+    virtual public void TryMovement(float horizontalMovement, float verticalInput) {
         TurnTowards(horizontalMovement);
         if (!canMove) return;
-        if (substate != null) substate.TryMovement(horizontalMovement);
+        if (substate != null) substate.TryMovement(horizontalMovement, verticalInput);
     }
 
     virtual public void TryJump() {

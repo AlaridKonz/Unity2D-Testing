@@ -50,7 +50,10 @@ public class Grounded : State {
         Trigger(newTrigger, true);
     }
 
-    public override void TryMovement(float horizontalMovement) {
+    public override void TryMovement(float horizontalMovement, float verticalInput) {
+        substate.TryMovement(horizontalMovement, verticalInput);
+        if (substate == crouch) return;
+        if (verticalInput < -0.99f) { Set(crouch, true, "down"); return; }
         if (Mathf.Abs(horizontalMovement) < 0.1f) return;
         if (Mathf.Abs(horizontalMovement) < 0.6f) Set(walk, false, "slow movement");
         else Set(run, false, "fast movement");
